@@ -1,0 +1,64 @@
+import csv
+import datetime
+
+class Rekins:
+    def __init__(self, klienta_vards, veltijums, platums, garums, augstums, cena_m2):
+        self.laiks = datetime.datetime.now()
+        self.klients = klienta_vards
+        self.veltijums = veltijums
+        self.platums = platums
+        self.garums = garums
+        self.augstums = augstums
+        self.cena_m2 = cena_m2
+
+        self.darba_samaksas_likme = 15
+        self.PVN_procents = 21
+        self.rekina_summa = self.aprekina_summa()
+
+    def aprekina_summa(self):
+        # Produkta cena
+        teksta_garums = len(self.veltijums)
+        produkta_cena = (
+            (teksta_garums * 1.2 + self.platums / 100 * self.garums / 100) / 3
+            * self.augstums / 100 * self.cena_m2
+        )
+        # PVN summa
+        PVN_summa = (produkta_cena + self.darba_samaksas_likme) * self.PVN_procents / 100
+        # Gala summa
+        return round(produkta_cena + self.darba_samaksas_likme + PVN_summa, 2)
+
+    def izdrukat(self):
+        print(f"Izveidots: {self.laiks}")
+        print(f"Klients: {self.klients}")
+        print(f"Veltījums: {self.veltijums}")
+        print(f"Izmēri: {self.platums} x {self.garums} x {self.augstums} mm")
+        print(f"Kopējā summa (ar PVN): {self.rekina_summa} EUR")
+
+    def saglabat_csv(self, fails):
+        with open(fails, mode='a', newline='', encoding='utf-8') as f:
+            rakstitajs = csv.writer(f)
+            rakstitajs.writerow([
+                self.laiks, self.klients, self.veltijums,
+                self.platums, self.garums, self.augstums,
+                self.rekina_summa
+            ])
+
+def galvena_programma():
+    print("Programma koka lādītes rēķina aprēķinam")
+
+    vards = input("Ievadi klienta vārdu: ")
+    veltijums = input("Ievadi veltījuma tekstu: ")
+
+    platums = int(input("Ievadi platumu (mm): "))
+    garums = int(input("Ievadi garumu (mm): "))
+    augstums = int(input("Ievadi augstumu (mm): "))
+    cena_m2 = float(input("Ievadi materiāla cenu EUR/m2: "))
+
+    rekins = Rekins(vards, veltijums, platums, garums, augstums, cena_m2)
+    rekins.izdrukat()
+    rekins.saglabat_csv("rekini.csv")
+
+    print("Darbība pabeigta. Rēķins saglabāts.")
+
+if __name__ == "__main__":
+    galvena_programma()
